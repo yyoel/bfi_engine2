@@ -7,7 +7,6 @@ import  javax.persistence.GeneratedValue;
 import  javax.persistence.Id;
 import  java.util.Date;
 
-@Data
 @Entity
 public class TransactionModel {
 
@@ -15,6 +14,14 @@ public class TransactionModel {
     public Date transactionTime;
     public int productId;
     public String bodyMessage;
+
+    public int getId() {
+        return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
+    }
 
     public Date getTransactionTime() {
         return transactionTime;

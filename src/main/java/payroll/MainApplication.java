@@ -11,10 +11,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.context.annotation.Bean;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
@@ -28,24 +27,30 @@ public class MainApplication {
 
     public static Logger logger = LoggerFactory.getLogger(MainApplication.class);
 
-    public static void main(String... args){
+    @Autowired
+    private TransactionRepository repository;
 
-        // TransactionModel transaction = new TransactionModel();
-
-        // String from_date = "1997-07-17";
-        // DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        // Date fd = formatter.parse(from_date);
-        // java.sql.Date sqlDate = new java.sql.Date(fd.getTime());
-        // transaction.setTransactionTime(sqlDate);
-        // transaction.setProductId(1);
-        // transaction.setBodyMessage("Hello World");
-
+    public static void main(String... args) {
         SpringApplication.run(MainApplication.class, args);
     }
 
     @KafkaListener(topics = "engineOneTopic")
     public void listen(ConsumerRecord<?, ?> cr) throws Exception{
         logger.info(cr.toString());
+        saveRepo();
+    }
+
+    public void saveRepo() throws ParseException {
+        TransactionModel transaction = new TransactionModel();
+
+        String from_date = "1997-07-17";
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date fd = formatter.parse(from_date);
+        java.sql.Date sqlDate = new java.sql.Date(fd.getTime());
+        transaction.setTransactionTime(sqlDate);
+        transaction.setProductId(1);
+        transaction.setBodyMessage("Hello World");
+        repository.save(transaction);
     }
 }
 // passmysql: 123456
