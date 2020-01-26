@@ -27,20 +27,38 @@ public class MainApplication {
 
     public static Logger logger = LoggerFactory.getLogger(MainApplication.class);
 
-    @Autowired
-    private TransactionRepository repository;
+//    @Autowired
+//    TransactionRepository repository;
 
     public static void main(String... args) {
         SpringApplication.run(MainApplication.class, args);
     }
 
+//    @Bean
+//    public CommandLineRunner dmeo(TransactionRepository repository){
+//        return (args -> {
+//            String from_date = "1997-07-17";
+//            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+//            Date fd = formatter.parse(from_date);
+//            java.sql.Date sqlDate = new java.sql.Date(fd.getTime());
+//            repository.save(new TransactionModel(sqlDate,1,"Hello"));
+//
+//            logger.info("GetAllTransaction");
+//            logger.info("-----------------");
+//            for (TransactionModel transactionModel : repository.findAll()){
+//                logger.info(toString());
+//            }
+//            logger.info("");
+//        });
+//    }
+
     @KafkaListener(topics = "engineOneTopic")
     public void listen(ConsumerRecord<?, ?> cr) throws Exception{
         logger.info(cr.toString());
-        saveRepo();
     }
 
-    public void saveRepo() throws ParseException {
+    @Bean
+    public String saveRepo(TransactionRepository repository) throws ParseException {
         TransactionModel transaction = new TransactionModel();
 
         String from_date = "1997-07-17";
@@ -48,9 +66,10 @@ public class MainApplication {
         Date fd = formatter.parse(from_date);
         java.sql.Date sqlDate = new java.sql.Date(fd.getTime());
         transaction.setTransactionTime(sqlDate);
-        transaction.setProductId(1);
+        transaction.setProductId(2);
         transaction.setBodyMessage("Hello World");
         repository.save(transaction);
+        return  "Saved";
     }
 }
 // passmysql: 123456
