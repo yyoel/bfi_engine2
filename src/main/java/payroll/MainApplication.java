@@ -11,6 +11,12 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.context.annotation.Bean;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 //import java.util.logging.Logger;
@@ -33,6 +39,29 @@ public class MainApplication {
             if (!con.isClosed()) {
               con.close();
             }
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory(con.toString());
+            EntityManager em = emf.createEntityManager();
+
+            em.getTransaction().begin();
+
+            TransactionModel transaction = new TransactionModel();
+
+            String from_date = "1997-07-17";
+            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            Date fd = formatter.parse(from_date);
+            java.sql.Date sqlDate = new java.sql.Date(fd.getTime());
+            transaction.setTransactionTime(sqlDate);
+            transaction.setProductId(1);
+            transaction.setBodyMessage("Hello World");
+
+            em.persist(transaction);
+
+            em.getTransaction().commit();
+
+            emf.close();
+            em.close();
+
+
         } catch (Exception e) {
             //TODO: handle exception
         }
