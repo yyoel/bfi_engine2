@@ -28,7 +28,7 @@ public class MainApplication {
     public static Logger logger = LoggerFactory.getLogger(MainApplication.class);
 
     @Autowired
-    private TransactionRepository repository;
+    TransactionRepository repository;
 
     public static void main(String... args) {
         SpringApplication.run(MainApplication.class, args);
@@ -37,10 +37,9 @@ public class MainApplication {
     @KafkaListener(topics = "engineOneTopic")
     public void listen(ConsumerRecord<?, ?> cr) throws Exception{
         logger.info(cr.toString());
-        saveRepo();
     }
 
-    public void saveRepo() throws ParseException {
+    public String saveRepo() throws ParseException {
         TransactionModel transaction = new TransactionModel();
 
         String from_date = "1997-07-17";
@@ -51,6 +50,7 @@ public class MainApplication {
         transaction.setProductId(1);
         transaction.setBodyMessage("Hello World");
         repository.save(transaction);
+        return "Saved";
     }
 }
 // passmysql: 123456
