@@ -14,33 +14,34 @@ import org.springframework.context.annotation.Bean;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 //import java.util.logging.Logger;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 @SpringBootApplication
-public class PayrollApplication implements CommandLineRunner {
+public class MainApplication {
 
-    public static Logger logger = LoggerFactory.getLogger(PayrollApplication.class);
+    public static Logger logger = LoggerFactory.getLogger(MainApplication.class);
 
     public static void main(String... args){
-        SpringApplication.run(PayrollApplication.class, args);
+        try {
+            String driver = "com.mysql.jdbc.Driver";
+            String connection = "jdbc:mysql://35.197.151.36:3306/transaction";
+            String user = "root";
+            String password = "root";
+            Class.forName(driver);
+            Connection con = DriverManager.getConnection(connection, user, password);
+            if (!con.isClosed()) {
+              con.close();
+            }
+        } catch (Exception e) {
+            //TODO: handle exception
+        }
+        SpringApplication.run(MainApplication.class, args);
     }
 
-    @Autowired
-    private KafkaTemplate<String, String> template;
-
-    private final CountDownLatch latch = new CountDownLatch(3);
-
-    @Override
-    public void run(String... args) throws Exception{
-        this.template.send("myTopic", "foo1");
-        this.template.send("myTopic", "foo2");
-        this.template.send("myTopic", "foo3");
-        latch.await(60, TimeUnit.SECONDS);
-        logger.info("All Received");
-    }
-
-    @KafkaListener(topics = "myTopic")
+    @KafkaListener(topics = "engineOneTopic")
     public void listen(ConsumerRecord<?, ?> cr) throws Exception{
         logger.info(cr.toString());
-        latch.countDown();
     }
 }
+// passmysql: 123456
