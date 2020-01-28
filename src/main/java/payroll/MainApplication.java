@@ -53,7 +53,7 @@ public class MainApplication {
 //    }
 
     @KafkaListener(topics = "engineOneTopic")
-    public void listen(ConsumerRecord<?, ?> cr) throws Exception{
+    public void listen(ConsumerRecord<String, TransactionModel> cr) throws Exception{
         logger.info(cr.toString());
     }
 
