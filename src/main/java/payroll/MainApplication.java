@@ -10,6 +10,8 @@ import com.google.gson.GsonBuilder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +21,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 public class MainApplication {
 
     public static Logger logger = LoggerFactory.getLogger(MainApplication.class);
+    @Autowired
     private TransactionRepository repository;
 
     public static void main(String... args) {
@@ -30,13 +33,6 @@ public class MainApplication {
         logger.info(cr.toString());
  
         TransactionModel transaction = new Gson().fromJson(cr, TransactionModel.class);
-        logger.info("StartSave");
-        saveRepo(transaction);
-        logger.info("EndSave");
-    }
-
-    public String saveRepo(TransactionModel transactionModel) throws ParseException {
-        TransactionModel transaction = new TransactionModel();
 
         String pattern = ("yyyy-MM-dd");
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -45,11 +41,6 @@ public class MainApplication {
         Date fd = formatter.parse(date);
         java.sql.Date sqlDate = new java.sql.Date(fd.getTime());
 
-        transaction.setTransactionTime(sqlDate);
-        transaction.setProductId(transactionModel.productId);
-        transaction.setBodyMessage(transactionModel.bodyMessage);
-        repository.save(transaction);
-        return  "Saved";
+        repository.save(new TransactionModel(sqlDate, transaction.productId, transaction.bodyMessage));
     }
 }
-// passmysql: 123456

@@ -1,16 +1,17 @@
 package payroll;
 
-import lombok.Data;
+import java.util.Date;
 
-import  javax.persistence.Entity;
-import  javax.persistence.GeneratedValue;
-import  javax.persistence.Id;
-import  java.util.Date;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class TransactionModel {
-
-    private @Id @GeneratedValue int Id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int Id;
     public Date transactionTime;
     public int productId;
     public String bodyMessage;
