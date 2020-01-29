@@ -1,9 +1,5 @@
 package payroll;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import com.google.gson.Gson;
 
 import org.slf4j.Logger;
@@ -17,6 +13,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 public class MainApplication {
 
     public static Logger logger = LoggerFactory.getLogger(MainApplication.class);
+    
+    //Inject TransactionRepository
     @Autowired
     private TransactionRepository repository;
 
@@ -26,17 +24,13 @@ public class MainApplication {
 
     @KafkaListener(topics = "publishDataTopic")
     public void listen(String cr) throws Exception{
+        //info Topic Value
         logger.info(cr.toString());
  
+        //deserialize JSON to Object(TransactionModel)
         TransactionModel transaction = new Gson().fromJson(cr, TransactionModel.class);
 
-        String pattern = ("yyyy-MM-dd");
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-        String date = simpleDateFormat.format(transaction.transactionTime);
-        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        Date fd = formatter.parse(date);
-        java.sql.Date sqlDate = new java.sql.Date(fd.getTime());
-
-        repository.save(new TransactionModel(sqlDate, transaction.productId, transaction.bodyMessage));
+        //Store Object to Datasabase (MySql)
+        repository.save(transaction);
     }
 }
