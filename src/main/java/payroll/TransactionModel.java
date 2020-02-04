@@ -1,19 +1,21 @@
 package payroll;
 
+import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
 
-import  javax.persistence.Entity;
-import  javax.persistence.GeneratedValue;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import  javax.persistence.Id;
-import  java.util.Date;
+import javax.persistence.Id;
 
+//Set this Class into Entity
 @Entity
 public class TransactionModel {
-
+    //Auto Generate Id
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private @Id @GeneratedValue int Id;
+    private int Id;
+    //Date Format for Json
     @JsonFormat(pattern="dd/MM/yyyy")
     public Date transactionTime;
     public int productId;
@@ -51,6 +53,7 @@ public class TransactionModel {
         this.bodyMessage = bodyMessage;
     }
 
+    //Constructor
     TransactionModel(Date transactionTime, int productId, String bodyMessage ){
         this.transactionTime = transactionTime;
         this.productId = productId;
